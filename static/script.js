@@ -46,17 +46,33 @@ socket.onclose = function (e) {
   // modal.style.display = "block";
 };
 
+window.onbeforeunload = function () {
+  return socket.close()
+}
+
 socket.onmessage = function (event) {
   console.log("on message event");
   console.log(event);
 
   if (event.data === "waiting_for_player") {
     modal.style.display = "block";
-    modalText.textContent = "Waiting for the other player to connect";
+    modalText.textContent = "Please wait! I'll login shortly";
     return;
-  } else if (event.data === "full_room") {
+  }
+  //   else if (event.data === 'logged_in' + `${clientId}`) {
+  //   modal.style.display = "block";
+  //   modalText.textContent = "I've just logged in, thinking of my first move";
+  //   return;
+    
+  // }
+    else if (event.data === "full_room") {
     modal.style.display = "block";
     modalText.textContent = "Sorry, the room is currently full, please try again later!";
+    document.head.appendChild(style);
+    return;
+  } else if (event.data === "player_dc") {
+    modal.style.display = "block";
+    modalText.textContent = 'The player has disconnected, please click "restart the game" button or refresh the page';
     document.head.appendChild(style);
     return;
   }

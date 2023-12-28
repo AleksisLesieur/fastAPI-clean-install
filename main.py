@@ -49,6 +49,10 @@ class ConnectionManager:
             if self.connection_count == 1:
                 await self.broadcast("waiting_for_player")
 
+            # if self.connection_count == 2:
+                # await self.broadcast("logged_in")
+                # await self.broadcast("logged_in" + str(game_state.temporary_id))
+
         else:
             await websocket.send_text('full_room')
             await websocket.close(code=1000)
@@ -76,7 +80,6 @@ class GameState:
         self.current_player = 'X'
         self.last_player = None
         self.temporary_id = None
-        # self.player2_id = None
 
     def set_player_id(self, client_id):
         if not self.temporary_id:
@@ -128,9 +131,9 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
                 }))
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+        await manager.broadcast('player_dc')
         await manager.reset()
         game_state.reset()
-        await manager.broadcast(json.dumps({"type": "disconnection", "message": f"Player {client_id} disconnected"}))
 
 # async def update_modal():
 #     await manager.broadcast(json.dumps({"type": 'playerCount', "count": manager.connection_count}))
